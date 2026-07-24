@@ -1,0 +1,32 @@
+﻿spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: ${DB_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      initial-size: 3
+      min-idle: 3
+      max-active: 10
+      max-wait: 60000
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 3000ms
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+
+deepseek:
+  api-key: ${DEEPSEEK_API_KEY}
+  api-url: https://api.deepseek.com/v1/chat/completions
+  model: deepseek-chat
+
+logging:
+  level:
+    com.greenguide: info
