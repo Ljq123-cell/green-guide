@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GreenGuide - 管理后台</title>
+<style>
+:root{--primary:#059669;--phover:#047857;--bg:#f1f5f9;--card:#fff;--text:#1e293b;--sub:#94a3b8;--border:#e2e8f0;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--radius:12px;--shadow:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.admin-wrap{max-width:1280px;margin:0 auto;padding:16px 20px}
+.topbar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:var(--radius);padding:12px 20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.topbar .brand{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:700;color:var(--text)}
+.topbar .brand .icon{font-size:22px}
+.topbar .user-info{font-size:13px;color:var(--sub);margin-right:8px}
+.tabs{display:flex;gap:2px;background:#f1f5f9;border-radius:10px;padding:3px}
+.tab-btn{padding:7px 16px;border:none;border-radius:8px;background:transparent;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;color:#64748b}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.btn-logout{font-size:13px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:#64748b;cursor:pointer;transition:.2s}
+.btn-logout:hover{background:#f8fafc;color:var(--red)}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.tbar{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+.tbar button{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:13px;cursor:pointer;transition:.2s;color:#475569}
+.tbar button:hover{background:#f8fafc}
+.tbar button.primary{background:var(--primary);color:#fff;border:none}
+.tbar button.primary:hover{background:var(--phover)}
+.tbar button.danger{background:var(--red);color:#fff;border:none}
+.tbar select{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:13px;color:#475569;cursor:pointer;outline:none}
+
+.tbl{width:100%;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);border-collapse:collapse}
+.tbl th{background:#334155;color:#fff;padding:10px 14px;font-size:12px;text-align:left;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.tbl td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);color:#475569}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#f8fafc}
+.tbl .actions{display:flex;gap:4px}
+.tbl .actions button{padding:4px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;background:var(--card);color:#64748b;transition:.2s}
+.tbl .actions button:hover{background:#f1f5f9;color:var(--text)}
+.tbl .actions .btn-p{color:var(--primary);border-color:var(--primary)}
+.tbl .actions .btn-p:hover{background:#ecfdf5}
+.tbl .actions .btn-d{color:var(--red);border-color:var(--red)}
+.tbl .actions .btn-d:hover{background:#fef2f2}
+
+.badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.bg-draft{background:#fef3c7;color:#92400e}
+.bg-published{background:#ecfdf5;color:#065f46}
+.bg-pending{background:#eff6ff;color:#1e40af}
+.bg-processed{background:#ecfdf5;color:#065f46}
+.bg-ignored{background:#f1f5f9;color:#64748b}
+
+.pg{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:14px}
+.pg button{padding:7px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;color:#475569;cursor:pointer;transition:.2s}
+.pg button:hover:not(:disabled){background:#f8fafc}
+.pg button:disabled{opacity:.35;cursor:default}
+.pg .pg-info{font-size:13px;color:var(--sub)}
+
+.m-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:20px}
+.m-overlay.show{display:flex}
+.m-box{background:var(--card);border-radius:14px;max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,.15);border:1px solid var(--border);animation:sIn .2s ease}
+@keyframes sIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.m-box h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:16px}
+.m-box label{display:block;font-size:12px;font-weight:600;color:#64748b;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.3px}
+.m-box input,.m-box textarea,.m-box select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:#f8fafc;font-family:inherit;transition:.2s}
+.m-box input:focus,.m-box textarea:focus,.m-box select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+.m-box textarea{resize:vertical;min-height:80px}
+.m-box .btns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.m-box .btns button{padding:9px 22px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-save{background:var(--primary);color:#fff}
+.btn-save:hover{background:var(--phover)}
+.btn-cancel{background:#f1f5f9;color:#64748b}
+.btn-cancel:hover{background:#e2e8f0}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#334155;color:#fff;padding:10px 28px;border-radius:22px;font-size:13px;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="admin-wrap" id="adminWrap">
+  <div class="topbar">
+    <div class="brand"><span class="icon">🌿</span>管理后台</div>
+    <div class="tabs">
+      <button class="tab-btn active" data-panel="p-knowledge">文章管理</button>
+      <button class="tab-btn" data-panel="p-quiz">题库管理</button>
+      <button class="tab-btn" data-panel="p-feedback">反馈管理</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="user-info" id="adminUser"></span>
+      <button class="btn-logout" onclick="doLogout()">退出登录</button>
+    </div>
+  </div>
+
+  <!-- Articles -->
+  <div class="panel active" id="p-knowledge">
+    <div class="tbar">
+      <button class="primary" onclick="openArticleModal()">＋ 新建文章</button>
+      <select id="kCatFilter" onchange="loadArticles()"><option value="">全部分类</option><option value="RECYCLABLE">可回收物</option><option value="HARMFUL">有害垃圾</option><option value="KITCHEN">厨余垃圾</option><option value="OTHER">其他垃圾</option></select>
+      <select id="kStatusFilter" onchange="loadArticles()"><option value="">全部状态</option><option value="DRAFT">草稿</option><option value="PUBLISHED">已发布</option></select>
+    </div>
+    <table class="tbl"><thead><tr><th>ID</th><th>标题</th><th>分类</th><th>状态</th><th>浏览</th><th>发布时间</th><th>操作</th></tr></thead><tbody id="kBody"></tbody></table>
+    <div class="pg"><button id="kPrev" disabled onclick="loadArticles(kPage-1)">上一页</button><span class="pg-info" id="kPageInfo">第 1 页</span><button id="kNext" disabled onclick="loadArticles(kPage+1)">下一页</button></div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="panel" id="p-quiz">
+    <div class="tbar">
+      <button class="primary" onclick="openQuizModal()">＋ 新建题目</button>
+      <button class="primary" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)" onclick="openAIGenerateModal()">🤖 AI 生成题目</button>
+      <select id="qDiffFilter" onchange="loadQuiz()"><option value="">全部难度</option><option value="BEGINNER">入门</option><option value="INTERMEDIATE">进阶</option><option value="CHALLENGE">挑战</option></select>
+      <select id="qStatusFilter" onchange="loadQuiz()"><option value="">全部状态</option><option value="DRAFT">草稿</option><option value="PUBLISHED">已发布</option></select>
+    </div>
+    <table class="tbl"><thead><tr><th>ID</th><th>题干</th><th>难度</th><th>状态</th><th>正确率</th><th>操作</th></tr></thead><tbody id="qBody"></tbody></table>
+    <div class="pg"><button id="qPrev" disabled onclick="loadQuiz(qPage-1)">上一页</button><span class="pg-info" id="qPageInfo">第 1 页</span><button id="qNext" disabled onclick="loadQuiz(qPage+1)">下一页</button></div>
+  </div>
+
+  <!-- Feedback -->
+  <div class="panel" id="p-feedback">
+    <div class="tbar">
+      <select id="fStatusFilter" onchange="loadFeedback()"><option value="">全部状态</option><option value="PENDING">待处理</option><option value="PROCESSED">已处理</option><option value="IGNORED">已忽略</option></select>
+    </div>
+    <table class="tbl"><thead><tr><th>ID</th><th>类型</th><th>内容</th><th>关联垃圾</th><th>状态</th><th>提交时间</th><th>操作</th></tr></thead><tbody id="fBody"></tbody></table>
+  </div>
+</div>
+
+<div class="m-overlay" id="aModal"><div class="m-box" id="aModalBody"></div></div>
+<div class="m-overlay" id="qModal"><div class="m-box" id="qModalBody"></div></div>
+<div class="m-overlay" id="aiModal"><div class="m-box" id="aiModalBody"></div></div>
+<div class="m-overlay" id="fModal"><div class="m-box" id="fModalBody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Auth check =====
+(function(){
+  const token=localStorage.getItem('gg_token'), user=JSON.parse(localStorage.getItem('gg_user')||'{}');
+  if(!token||(user.role!=='ADMIN'&&user.role!=='EDITOR')){window.location.href='/login.html';return;}
+  document.getElementById('adminUser').textContent=user.nickname||user.role||'管理员';
+  window._token=token;
+  loadArticles();
+})();
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function doLogout(){localStorage.clear();window.location.href='/login.html';}
+function auth(){return{headers:{'Content-Type':'application/json','Authorization':'Bearer '+window._token}}}
+
+const API='/api/v1/admin';let kPage=1,qPage=1;
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(this.dataset.panel).classList.add('active');
+  if(this.dataset.panel==='p-knowledge')loadArticles();
+  if(this.dataset.panel==='p-quiz')loadQuiz();
+  if(this.dataset.panel==='p-feedback')loadFeedback();
+}));
+
+// ===== Articles =====
+function catNames(c){const m={RECYCLABLE:'可回收物',HARMFUL:'有害垃圾',KITCHEN:'厨余垃圾',OTHER:'其他垃圾'};return m[c]||c;}
+async function loadArticles(pg){
+  if(pg)kPage=pg;
+  const cat=document.getElementById('kCatFilter').value,st=document.getElementById('kStatusFilter').value;
+  try{
+    const r=await fetch(API+'/knowledge?page='+kPage+'&size=10'+(cat?'&category='+cat:'')+(st?'&status='+st:''),auth());
+    const d=await r.json();
+    if(d.code===200){
+      const tbody=document.getElementById('kBody'),data=d.data;
+      if(data.records.length===0)tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--sub)">暂无文章</td></tr>';
+      else tbody.innerHTML=data.records.map(a=>
+        `<tr><td>${a.id}</td><td><strong>${a.title}</strong></td><td>${catNames(a.category)}</td><td><span class="badge ${a.status==='PUBLISHED'?'bg-published':'bg-draft'}">${a.status==='PUBLISHED'?'已发布':'草稿'}</span></td><td>${a.viewCount||0}</td><td>${a.publishedAt?a.publishedAt.substring(0,10):'—'}</td><td class="actions"><button onclick="editArticle(${a.id})">编辑</button>${a.status==='DRAFT'?'<button class="btn-p" onclick="publishArticle('+a.id+')">发布</button>':'<button class="btn-p" onclick="unpublishArticle('+a.id+')">下架</button>'}<button class="btn-d" onclick="deleteArticle(${a.id})">删除</button></td></tr>`
+      ).join('');
+      document.getElementById('kPrev').disabled=kPage<=1;
+      document.getElementById('kNext').disabled=data.records.length<10;
+      document.getElementById('kPageInfo').textContent=`第 ${kPage} 页 / 共 ${data.total} 条`;
+    }
+  }catch(e){}
+}
+function openArticleModal(id){
+  const isNew=!id;
+  document.getElementById('aModalBody').innerHTML=`<h3>${isNew?'新建文章':'编辑文章'}</h3><label>标题</label><input id="aTitle"><label>摘要</label><input id="aSummary"><label>分类</label><select id="aCat"><option value="RECYCLABLE">可回收物</option><option value="HARMFUL">有害垃圾</option><option value="KITCHEN">厨余垃圾</option><option value="OTHER">其他垃圾</option></select><label>正文（HTML）</label><textarea id="aContent"></textarea><label>标签</label><input id="aTags"><label>来源</label><input id="aSource"><div class="btns"><button class="btn-cancel" onclick="closeModals()">取消</button><button class="btn-save" onclick="saveArticle('${id||''}')">保存</button></div>`;
+  if(id){fetch(API+'/knowledge/'+id,auth()).then(r=>r.json()).then(d=>{if(d.code===200){const a=d.data;document.getElementById('aTitle').value=a.title||'';document.getElementById('aSummary').value=a.summary||'';document.getElementById('aCat').value=a.category;document.getElementById('aContent').value=a.content||'';document.getElementById('aTags').value=a.tags||'';document.getElementById('aSource').value=a.source||'';}})}
+  document.getElementById('aModal').classList.add('show');
+}
+async function saveArticle(id){
+  const body={title:document.getElementById('aTitle').value,summary:document.getElementById('aSummary').value,category:document.getElementById('aCat').value,content:document.getElementById('aContent').value,tags:document.getElementById('aTags').value,source:document.getElementById('aSource').value};
+  const url=id?API+'/knowledge/'+id:API+'/knowledge',method=id?'PUT':'POST';
+  const r=await fetch(url,{method,headers:auth().headers,body:JSON.stringify(body)});
+  if((await r.json()).code===200){toast(id?'编辑成功':'创建成功');closeModals();loadArticles()}
+}
+async function publishArticle(id){if(confirm('确认发布？')){await fetch(API+'/knowledge/'+id+'/publish',{method:'PUT',headers:auth().headers});toast('已发布');loadArticles()}}
+async function unpublishArticle(id){if(confirm('确认下架？')){await fetch(API+'/knowledge/'+id+'/unpublish',{method:'PUT',headers:auth().headers});toast('已下架');loadArticles()}}
+async function deleteArticle(id){if(confirm('确认删除？')){await fetch(API+'/knowledge/'+id,{method:'DELETE',headers:auth().headers});toast('已删除');loadArticles()}}
+function editArticle(id){openArticleModal(id)}
+
+// ===== Quiz =====
+function diffNames(d){const m={BEGINNER:'入门',INTERMEDIATE:'进阶',CHALLENGE:'挑战'};return m[d]||d;}
+async function loadQuiz(pg){
+  if(pg)qPage=pg;
+  const diff=document.getElementById('qDiffFilter').value,st=document.getElementById('qStatusFilter').value;
+  try{
+    const r=await fetch(API+'/quiz?page='+qPage+'&size=10'+(diff?'&difficulty='+diff:'')+(st?'&status='+st:''),auth());
+    const d=await r.json();
+    if(d.code===200){
+      const tbody=document.getElementById('qBody'),data=d.data;
+      if(data.records.length===0)tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--sub)">暂无题目</td></tr>';
+      else tbody.innerHTML=data.records.map(q=>{
+        let acc='—';if(q.usageCount>0)acc=Math.round((q.correctCount||0)*100/q.usageCount)+'%';
+        return `<tr><td>${q.id}</td><td>${q.stem}</td><td>${diffNames(q.difficulty)}</td><td><span class="badge ${q.status==='PUBLISHED'?'bg-published':'bg-draft'}">${q.status==='PUBLISHED'?'已发布':'草稿'}</span></td><td>${acc}</td><td class="actions"><button onclick="editQuiz('${q.id}')">编辑</button>${q.status==='DRAFT'?'<button class="btn-p" onclick="publishQuiz('+q.id+')">发布</button>':''}<button class="btn-d" onclick="deleteQuiz(${q.id})">删除</button></td></tr>`
+      }).join('');
+      document.getElementById('qPrev').disabled=qPage<=1;document.getElementById('qNext').disabled=data.records.length<10;
+      document.getElementById('qPageInfo').textContent=`第 ${qPage} 页 / 共 ${data.total} 条`;
+    }
+  }catch(e){}
+}
+function openQuizModal(id){
+  const isNew=!id;
+  document.getElementById('qModalBody').innerHTML=`<h3>${isNew?'新建题目':'编辑题目'}</h3><label>题干</label><input id="qStem"><label>题型</label><select id="qType"><option value="SINGLE_CHOICE">单选题</option><option value="MULTIPLE_CHOICE">多选题</option><option value="TRUE_FALSE">判断题</option></select><label>选项（JSON格式）</label><textarea id="qOpts" rows="3">[{"key":"A","text":""},{"key":"B","text":""},{"key":"C","text":""},{"key":"D","text":""}]</textarea><label>正确答案</label><input id="qAnswer" placeholder="如 A 或 A,C"><label>难度</label><select id="qDiff"><option value="BEGINNER">入门</option><option value="INTERMEDIATE">进阶</option><option value="CHALLENGE">挑战</option></select><label>知识解析</label><textarea id="qExplain"></textarea><label>分类标签</label><input id="qTag"><div class="btns"><button class="btn-cancel" onclick="closeModals()">取消</button><button class="btn-save" onclick="saveQuiz('${id||''}')">保存</button></div>`;
+  if(id){fetch(API+'/quiz/'+id,auth()).then(r=>r.json()).then(d=>{if(d.code===200){const q=d.data;document.getElementById('qStem').value=q.stem||'';document.getElementById('qType').value=q.questionType||'SINGLE_CHOICE';document.getElementById('qOpts').value=q.options||'';document.getElementById('qAnswer').value=q.correctAnswer||'';document.getElementById('qDiff').value=q.difficulty||'BEGINNER';document.getElementById('qExplain').value=q.explanation||'';document.getElementById('qTag').value=q.categoryTag||'';}})}
+  document.getElementById('qModal').classList.add('show');
+}
+async function saveQuiz(id){
+  const body={stem:document.getElementById('qStem').value,questionType:document.getElementById('qType').value,options:document.getElementById('qOpts').value,correctAnswer:document.getElementById('qAnswer').value,difficulty:document.getElementById('qDiff').value,explanation:document.getElementById('qExplain').value,categoryTag:document.getElementById('qTag').value};
+  const url=id?API+'/quiz/'+id:API+'/quiz',method=id?'PUT':'POST';
+  const r=await fetch(url,{method,headers:auth().headers,body:JSON.stringify(body)});
+  if((await r.json()).code===200){toast(id?'编辑成功':'创建成功');closeModals();loadQuiz()}
+}
+async function publishQuiz(id){if(confirm('确认发布？')){await fetch(API+'/quiz/'+id+'/publish',{method:'PUT',headers:auth().headers});toast('已发布');loadQuiz()}}
+async function deleteQuiz(id){if(confirm('确认删除？')){await fetch(API+'/quiz/'+id,{method:'DELETE',headers:auth().headers});toast('已删除');loadQuiz()}}
+function editQuiz(id){openQuizModal(id)}
+
+// ===== AI Generate Quiz =====
+function getRandomHint(){
+  const hints = [
+    "请选择一个具体的垃圾物品作为题目对象",
+    "可以围绕日常生活中的常见垃圾设计题目",
+    "请设计一道有教育意义的垃圾分类题目",
+    "题目应该具有实用性和指导性",
+    "请考虑垃圾分类的难点和易错点",
+    "可以设计一些容易混淆的垃圾分类题目",
+    "请关注环保主题，设计相关题目",
+    "可以结合季节特点设计垃圾分类题目"
+  ];
+  return hints[Math.floor(Math.random() * hints.length)];
+}
+
+function openAIGenerateModal(){
+  document.getElementById('aiModalBody').innerHTML=`
+    <h3>🤖 AI 生成题目</h3>
+    <label>选择类别</label>
+    <select id="aiCat">
+      <option value="">通用分类</option>
+      <option value="RECYCLABLE">♻️ 可回收物</option>
+      <option value="HARMFUL">☣️ 有害垃圾</option>
+      <option value="KITCHEN">🍂 厨余垃圾</option>
+      <option value="OTHER">🗑️ 其他垃圾</option>
+    </select>
+    <label>选择难度</label>
+    <select id="aiDiff">
+      <option value="BEGINNER">🌱 入门</option>
+      <option value="INTERMEDIATE">🌿 进阶</option>
+      <option value="CHALLENGE">🌳 挑战</option>
+    </select>
+    <div id="aiLoading" style="display:none;text-align:center;padding:20px;color:#6366f1;">
+      <div style="font-size:24px;margin-bottom:10px;">🤖</div>
+      <div>AI 正在生成题目，请稍候...</div>
+    </div>
+    <div id="aiResult" style="display:none;"></div>
+    <div class="btns" id="aiBtns">
+      <button class="btn-cancel" onclick="closeModals()">取消</button>
+      <button class="btn-save" onclick="generateAIQuiz()">生成题目</button>
+    </div>
+  `;
+  document.getElementById('aiModal').classList.add('show');
+}
+
+async function generateAIQuiz(){
+  const cat=document.getElementById('aiCat').value;
+  const diff=document.getElementById('aiDiff').value;
+
+  document.getElementById('aiBtns').style.display='none';
+  document.getElementById('aiLoading').style.display='block';
+
+  // 添加时间戳确保每次请求都不同
+  const timestamp = Date.now();
+  const randomHint = getRandomHint();
+
+  try{
+    const r=await fetch('/api/v1/public/ai/generate-quiz',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        category:cat,
+        difficulty:diff,
+        timestamp:timestamp,
+        hint:randomHint
+      })
+    });
+    const d=await r.json();
+
+    if(d.code===200){
+      const aiText=d.data.answer;
+      const parsed=parseAIGeneratedQuiz(aiText);
+
+      if(parsed){
+        document.getElementById('aiResult').innerHTML=`
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;margin-bottom:16px;">
+            <h4 style="color:#059669;margin-bottom:12px;">📝 生成的题目</h4>
+            <div style="white-space:pre-wrap;font-size:14px;color:#333;">${aiText}</div>
+          </div>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:16px;">
+            <h4 style="color:#1d4ed8;margin-bottom:12px;">✨ 确认添加到题库</h4>
+            <label>确认题干</label>
+            <input id="confirmStem" value="${parsed.stem}" style="font-weight:600;">
+            <label>确认选项（JSON）</label>
+            <textarea id="confirmOpts" rows="3">${JSON.stringify(parsed.options)}</textarea>
+            <label>确认答案</label>
+            <input id="confirmAnswer" value="${parsed.answer}">
+            <label>知识解析</label>
+            <textarea id="confirmExplain">${parsed.explanation}</textarea>
+            <label>分类标签</label>
+            <input id="confirmTag" value="${parsed.categoryTag}">
+          </div>
+          <div class="btns" style="margin-top:16px;">
+            <button class="btn-cancel" onclick="closeModals()">取消</button>
+            <button class="btn-save" onclick="saveAIGeneratedQuiz('${cat}','${diff}')">添加到题库</button>
+          </div>
+        `;
+        document.getElementById('aiLoading').style.display='none';
+        document.getElementById('aiResult').style.display='block';
+      }else{
+        throw new Error('解析失败');
+      }
+    }else{
+      throw new Error(d.message||'生成失败');
+    }
+  }catch(e){
+    document.getElementById('aiLoading').innerHTML=`
+      <div style="color:#ef4444;">❌ ${e.message}</div>
+      <button onclick="openAIGenerateModal()" style="margin-top:16px;padding:8px 20px;border:none;border-radius:8px;background:#059669;color:#fff;cursor:pointer;">重新生成</button>
+    `;
+  }
+}
+
+function parseAIGeneratedQuiz(text){
+  try{
+    let stem='', options=[], answer='', explanation='';
+    const lines=text.split('\n');
+    let currentOpts=null;
+
+    for(let line of lines){
+      line=line.trim();
+      if(line.startsWith('【题目】')){
+        stem=line.substring(4).trim();
+      }else if(line.match(/^[A-D]\./)){
+        const key=line[0];
+        const text=line.substring(2).trim();
+        if(!currentOpts) currentOpts=[];
+        currentOpts.push({key,text});
+      }else if(line.startsWith('【答案】')){
+        answer=line.substring(4).trim().toUpperCase();
+        options=currentOpts||[];
+      }else if(line.startsWith('【解析】')){
+        explanation=line.substring(4).trim();
+      }
+    }
+
+    if(stem && options.length>=2 && answer){
+      return {
+        stem,
+        options,
+        answer,
+        explanation,
+        categoryTag:'垃圾分类',
+        questionType:'SINGLE_CHOICE',
+        difficulty:'BEGINNER'
+      };
+    }
+    return null;
+  }catch(e){
+    console.error('Parse AI quiz error:',e);
+    return null;
+  }
+}
+
+async function saveAIGeneratedQuiz(cat,diff){
+  const body={
+    stem:document.getElementById('confirmStem').value,
+    questionType:'SINGLE_CHOICE',
+    options:document.getElementById('confirmOpts').value,
+    correctAnswer:document.getElementById('confirmAnswer').value,
+    difficulty:diff,
+    explanation:document.getElementById('confirmExplain').value,
+    categoryTag:document.getElementById('confirmTag').value,
+    status:'DRAFT'
+  };
+
+  try{
+    const r=await fetch(API+'/quiz',{
+      method:'POST',
+      headers:auth().headers,
+      body:JSON.stringify(body)
+    });
+    if((await r.json()).code===200){
+      toast('✅ AI生成题目已添加到题库');
+      closeModals();
+      loadQuiz();
+    }
+  }catch(e){
+    toast('保存失败');
+  }
+}
+
+// ===== Feedback =====
+async function loadFeedback(){
+  const st=document.getElementById('fStatusFilter').value;
+  try{
+    const r=await fetch(API+'/feedback?page=1&size=100'+(st?'&status='+st:''),auth());
+    const d=await r.json();
+    if(d.code===200){
+      const tbody=document.getElementById('fBody'),data=d.data;
+      if(data.records.length===0)tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--sub)">暂无反馈</td></tr>';
+      else tbody.innerHTML=data.records.map(f=>{
+        const tN={CLASSIFICATION_ERROR:'分类错误',CONTENT_ERROR:'内容错误',SUGGESTION:'功能建议',OTHER:'其他'};
+        return `<tr><td>${f.id}</td><td>${tN[f.feedbackType]||f.feedbackType}</td><td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.content||''}</td><td>${f.relatedGarbageName||'—'}</td><td><span class="badge ${f.status==='PENDING'?'bg-pending':f.status==='PROCESSED'?'bg-processed':'bg-ignored'}">${f.status==='PENDING'?'待处理':f.status==='PROCESSED'?'已处理':'已忽略'}</span></td><td>${f.createdAt?f.createdAt.substring(0,10):'—'}</td><td class="actions"><button onclick="processFeedback(${f.id},'${f.status||'PENDING'}')">处理</button></td></tr>`
+      }).join('');
+    }
+  }catch(e){}
+}
+function processFeedback(id,curStatus){
+  document.getElementById('fModalBody').innerHTML=`<h3>处理反馈 #${id}</h3><label>处理状态</label><select id="fProcStatus"><option value="PROCESSED"${curStatus==='PROCESSED'?' selected':''}>已处理</option><option value="IGNORED"${curStatus==='IGNORED'?' selected':''}>忽略</option></select><label>处理备注</label><textarea id="fNote"></textarea><div class="btns"><button class="btn-cancel" onclick="closeModals()">取消</button><button class="btn-save" onclick="saveFeedback(${id})">保存</button></div>`;
+  document.getElementById('fModal').classList.add('show');
+}
+async function saveFeedback(id){
+  const body={handlerId:'1',status:document.getElementById('fProcStatus').value,handlerNote:document.getElementById('fNote').value};
+  const r=await fetch(API+'/feedback/'+id+'/process',{method:'PUT',headers:auth().headers,body:JSON.stringify(body)});
+  if((await r.json()).code===200){toast('处理完成');closeModals();loadFeedback()}
+}
+
+function closeModals(){document.querySelectorAll('.m-overlay').forEach(m=>m.classList.remove('show'))}
+document.querySelectorAll('.m-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModals()}));
+</script>
+</body>
+</html>

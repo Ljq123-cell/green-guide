@@ -1,0 +1,42 @@
+
+server:
+  port: 8686
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+  # 暂时禁用 Redis 自动配置（代码中未使用 Redis，避免启动报错）
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.greenguide.module.*.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+jwt:
+  secret: your-jwt-secret-here-change-in-production
+  expiration: 86400000  # 24 hours
+
+deepseek:
+  api-key: your-deepseek-api-key-here
+  api-url: https://api.deepseek.com/v1/chat/completions
+  model: deepseek-chat
+
+green-guide:
+  upload:
+    max-size: 10MB
+    image-retention-hours: 24  # auto-delete user images after 24h
