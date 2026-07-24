@@ -1,4 +1,4 @@
-USE green_guide;
+-- Railway MySQL: database pre-selected
 
 -- ============================================
 -- 科普知识文章数据

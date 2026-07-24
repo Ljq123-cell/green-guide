@@ -1,4 +1,4 @@
-﻿spring:
+spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -10,6 +10,12 @@
       min-idle: 3
       max-active: 10
       max-wait: 60000
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      schema-locations: classpath:db/init-prod.sql
+      data-locations: classpath:db/extra_quiz.sql,classpath:db/extra_article.sql,classpath:db/extra_user.sql
   data:
     redis:
       host: ${REDIS_HOST:localhost}

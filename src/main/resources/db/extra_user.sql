@@ -1,4 +1,4 @@
-USE green_guide;
+-- Railway MySQL: database pre-selected
 
 -- ============================================
 -- 示例用户数据 (微信小程序用户)

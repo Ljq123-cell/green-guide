@@ -1,4 +1,4 @@
-USE green_guide;
+-- Railway MySQL: database pre-selected
 
 INSERT INTO quiz_question (stem, question_type, options, correct_answer, difficulty, explanation, category_tag, status) VALUES
 ('玻璃瓶回收前应该怎么做？','SINGLE_CHOICE','[{"key":"A","text":"直接扔进垃圾桶"},{"key":"B","text":"清洗干净并沥干"},{"key":"C","text":"打碎后丢弃"},{"key":"D","text":"和其他垃圾混装"}]','B','BEGINNER','玻璃瓶回收前应清空内容物并清洗干净，这样有助于提高回收效率和防止污染其他回收物。','RECYCLABLE','PUBLISHED'),
