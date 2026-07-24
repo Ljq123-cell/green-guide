@@ -2,9 +2,9 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: ${DB_URL}
-      username: ${DB_USERNAME}
-      password: ${DB_PASSWORD}
+      url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+      username: ${MYSQLUSER}
+      password: ${MYSQLPASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
       initial-size: 3
       min-idle: 3
