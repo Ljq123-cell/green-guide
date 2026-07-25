@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -132,6 +132,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="toast" id="toast"></div>
 
 <script>
+const API='/api/v1/admin';let kPage=1,qPage=1;
 // ===== Auth check =====
 (function(){
   const token=localStorage.getItem('gg_token'), user=JSON.parse(localStorage.getItem('gg_user')||'{}');
@@ -145,7 +146,6 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 function doLogout(){localStorage.clear();window.location.href='/login.html';}
 function auth(){return{headers:{'Content-Type':'application/json','Authorization':'Bearer '+window._token}}}
 
-const API='/api/v1/admin';let kPage=1,qPage=1;
 
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',function(){
@@ -176,7 +176,7 @@ async function loadArticles(pg){
       document.getElementById('kNext').disabled=data.records.length<10;
       document.getElementById('kPageInfo').textContent=`第 ${kPage} 页 / 共 ${data.total} 条`;
     }
-  }catch(e){}
+  }catch(e){console.error(e)}
 }
 function openArticleModal(id){
   const isNew=!id;
@@ -213,7 +213,7 @@ async function loadQuiz(pg){
       document.getElementById('qPrev').disabled=qPage<=1;document.getElementById('qNext').disabled=data.records.length<10;
       document.getElementById('qPageInfo').textContent=`第 ${qPage} 页 / 共 ${data.total} 条`;
     }
-  }catch(e){}
+  }catch(e){console.error(e)}
 }
 function openQuizModal(id){
   const isNew=!id;
@@ -427,7 +427,7 @@ async function loadFeedback(){
         return `<tr><td>${f.id}</td><td>${tN[f.feedbackType]||f.feedbackType}</td><td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.content||''}</td><td>${f.relatedGarbageName||'—'}</td><td><span class="badge ${f.status==='PENDING'?'bg-pending':f.status==='PROCESSED'?'bg-processed':'bg-ignored'}">${f.status==='PENDING'?'待处理':f.status==='PROCESSED'?'已处理':'已忽略'}</span></td><td>${f.createdAt?f.createdAt.substring(0,10):'—'}</td><td class="actions"><button onclick="processFeedback(${f.id},'${f.status||'PENDING'}')">处理</button></td></tr>`
       }).join('');
     }
-  }catch(e){}
+  }catch(e){console.error(e)}
 }
 function processFeedback(id,curStatus){
   document.getElementById('fModalBody').innerHTML=`<h3>处理反馈 #${id}</h3><label>处理状态</label><select id="fProcStatus"><option value="PROCESSED"${curStatus==='PROCESSED'?' selected':''}>已处理</option><option value="IGNORED"${curStatus==='IGNORED'?' selected':''}>忽略</option></select><label>处理备注</label><textarea id="fNote"></textarea><div class="btns"><button class="btn-cancel" onclick="closeModals()">取消</button><button class="btn-save" onclick="saveFeedback(${id})">保存</button></div>`;
