@@ -34,7 +34,7 @@ jwt:
 deepseek:
   api-key: your-deepseek-api-key-here
   api-url: https://api.deepseek.com/v1/chat/completions
-  model: deepseek-chat
+  model: deepseek-v4-flash
 
 green-guide:
   upload:
