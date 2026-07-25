@@ -52,7 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <button id="loginBtn" onclick="doLogin()">登 录</button>
     <div id="err"></div>
 
-    <div class="hint" id="hint">管理员: admin / admin123 &nbsp;|&nbsp; 普通用户: 环保小明 / user123 &nbsp;|&nbsp; 其他示例用户密码: test</div>
+    <div class="hint" id="hint">管理员: admin / admin123 &nbsp;|&nbsp; 普通用户: 环保小明 / test &nbsp;|&nbsp; 所有用户密码统一: test</div>
   </div>
   <div class="foot">统一账号登录 · 智能识别身份</div>
 </div>
@@ -67,8 +67,8 @@ function switchTab(tab){
   document.querySelector(`[data-mode="${tab}"]`).classList.add('active');
   const u=document.getElementById('username'),p=document.getElementById('password'),h=document.getElementById('hint');
   if(tab==='admin'){u.value='admin';p.value='admin123';h.innerHTML='管理员: admin / admin123';}
-  else if(tab==='user'){u.value='环保小明';p.value='user123';h.innerHTML='普通用户: 环保小明 / user123 &nbsp;|&nbsp; 其他示例用户密码: test';}
-  else{u.value='admin';p.value='admin123';h.innerHTML='管理员: admin / admin123 &nbsp;|&nbsp; 普通用户: 环保小明 / user123 &nbsp;|&nbsp; 其他示例用户密码: test';}
+  else if(tab==='user'){u.value='环保小明';p.value='test';h.innerHTML='普通用户: 环保小明 / test &nbsp;|&nbsp; 所有用户密码统一: test';}
+  else{u.value='admin';p.value='admin123';h.innerHTML='管理员: admin / admin123 &nbsp;|&nbsp; 普通用户: 环保小明 / test &nbsp;|&nbsp; 所有用户密码统一: test';}
   document.getElementById('err').style.display='none';
 }
 

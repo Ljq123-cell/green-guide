@@ -4,6 +4,7 @@
 -- 示例用户数据 (微信小程序用户)
 -- ============================================
 INSERT INTO user (open_id, nickname, avatar_url, password_hash, total_points, total_queries, total_answers, correct_answers, consecutive_days, last_login_date) VALUES
+('test001', '环保小明', '/static/avatar/default_01.png', '\\\/Ok.8T80RLDZqkvIt8NnFfmgnkxOJBHNDaS', 0, 0, 0, 0, 0, '2026-07-25'),
 ('oTest001_GreenGuide_Demo_User_001', '环保小卫士', '/static/avatar/default_01.png', '$2b$12$KUocnf3cVROEYjWxWZ/Ok.8T80RLDZqkvIt8NnFfmgnkxOJBHNDaS', 1250, 45, 68, 58, 15, '2026-06-03'),
 ('oTest002_GreenGuide_Demo_User_002', '垃圾分类达人', '/static/avatar/default_02.png', '$2b$12$KUocnf3cVROEYjWxWZ/Ok.8T80RLDZqkvIt8NnFfmgnkxOJBHNDaS', 980, 32, 52, 46, 10, '2026-06-02'),
 ('oTest003_GreenGuide_Demo_User_003', '绿色地球', '/static/avatar/default_03.png', '$2b$12$KUocnf3cVROEYjWxWZ/Ok.8T80RLDZqkvIt8NnFfmgnkxOJBHNDaS', 520, 20, 30, 22, 5, '2026-06-01'),
